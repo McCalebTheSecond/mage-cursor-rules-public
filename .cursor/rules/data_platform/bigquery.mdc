@@ -1,0 +1,20 @@
+# BigQuery Configuration
+
+## Project & Authentication
+- **Project ID**: Use `${GOOGLE_CLOUD_PROJECT}` environment variable
+- **Service Account Key**: Use `${GOOGLE_APPLICATION_CREDENTIALS}` environment variable or Application Default Credentials
+- **Location**: us-central1
+
+## Datasets
+- **odoo16_public**: Source data (Odoo replica via Datastream)
+- **dev**: Development target for dbt models
+- **staging**: Staging environment for dbt models  
+- **prod**: Production target for dbt models
+
+## dbt Targets
+- Default target: `dev`
+- Configured in `dbt/dw/profiles.yml`
+- Use `--target staging|prod` for other environments
+
+## Misc
+- Many name fields in Odoo data are JSON and need to be converted like this, for example: JSON_EXTRACT_SCALAR(name, '$.en_US') AS Name.
