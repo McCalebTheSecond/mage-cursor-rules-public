@@ -1,0 +1,23 @@
+# Misc codebase context
+
+## Data Warehouse Misc
+
+- Data sources include/will include but not limited to:
+    - Odoo16CV Postgres DB replicated to BigQuery via real time Datastream.
+    - QuickBooks Online
+    - Bill Spend & Expense
+    - Google Sheets
+
+
+## Tools/Stack 
+- **Mage.ai Pro (SaaS managed by Mage.ai)**: Data pipeline orchestration, hosted cluster with SSH access
+- **dbt**: Data transformation layer for data warehousing
+- **BigQuery**: Data warehouse (Project: Use `${GOOGLE_CLOUD_PROJECT}`)
+- **Odoo 16 Community**: Source system (PostgreSQL replicated via Google Datastream)
+- **Cursor IDE**: The AI in Cursor IDE for help with development.  
+    - The mage.ai project can be manipulated from Cursor since we are SSHed into the Ubuntu mage cluster.
+
+## File Structure Context (relative to project root)
+- `dbt/dw/`: dbt project root
+- `pipelines/`: Mage pipeline definitions
+- `utils/`: Helper scripts and configuration files
