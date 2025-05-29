@@ -1,0 +1,49 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Current Development State
+
+## Instructions for Cursor LLM/agent:
+- Keep this file `.cursor/rules/project/current_dev_state.mdc` up to date.
+
+## Active Work
+Following `DEV/project_estimation_plan.md` to build Project Estimation data mart in dbt.
+
+## Currently Working On
+**Verifying Plan Completion**: Working through `DEV/project_estimation_plan.md` to validate that checked `[x]` items are actually complete and correct.
+
+## Recently Completed ✅
+- **Source Table Identification & Cleanup**: Simplified user model by removing `res_users` tables
+- **User Model Simplification**: Now using `hr_employee.user_id` for all user relationships
+- **Sources Configuration**: Updated `sources.yml` with 14 final source tables (removed 2 user-related tables)
+- **Schema Cleanup**: Updated relationship tests to point to `hr_employee` instead of `res_users`
+- **Staging Models**: Cleaned up unnecessary user staging models
+
+## Previously Completed
+- Phase 1: dbt setup, sources configuration ✓
+- Phase 2: Most staging models completed ✓
+- Basic Mage pipeline `dbt_project_estimation_dev` created ✓
+
+## Next Up (After Plan Verification)
+- Complete remaining staging models:
+  - `stg_odoo__project_stage_tag.sql` 
+  - `stg_odoo__project_stage_project_stage_tag_rel.sql`
+- Create missing macros (`cast_and_rename`, `format_date_to_key`)
+- Set up source freshness monitoring
+
+## In Progress/Upcoming
+- Phase 3: Dimension models (snapshots + views)
+- Phase 4: Fact table `fct_project_estimates`
+
+## Key Models Status
+- **Sources**: 14 tables configured in `sources.yml` ✓
+- **Staging**: 13+ models in `models/staging/odoo/` (2 project stage tag models remaining)
+- **Marts**: Not yet started (`models/marts/core/` empty)
+- **Snapshots**: Not yet created (`snapshots/` empty)
+- **Macros**: Need to create utility macros in `macros/`
+
+## Current Git State
+- **Branch**: `chore/dbt_project_estimation/validate-completed-plan-items`
+- **Last Commit**: `06a426a` - User model simplification

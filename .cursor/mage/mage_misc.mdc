@@ -1,0 +1,49 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Mage AI Misc
+
+- We're using Mage.ai Pro (fully managed SaaS by Mage.ai)
+- We are SSHed into our Mage codebased.
+- Additional python packages not default in mage need added to requirments.txt within mage and the cluster restarted (via the UI).
+- **Ephemeral Storage**: Mage Pro uses containerized workspaces - system-level installations (like Node.js) are wiped on restart. Only project files and mounted volumes persist. Use `requirements.txt` for Python dependencies.
+
+# Mage AI Coding Best Practices
+
+- Make sure you use the web and Mage documentation often to help you, since Mage.ai Pro (SaaS verison) is a very new offering (only months old) and Mage itself only started in 2020, so your knowledge about Mage may be limited
+- Mage.ai OSS and Mage.ai Pro cloud hosted versions have significant differences
+- Follow Mage.ai best practices when coding, sticking closely to their philosophy
+- Mage.ai encourages a flexible yet structured approach to coding data pipelines
+- Keep it modular: Split your work into small, reusable blocks that each handle a distinct task, but ask the user before doing so
+- Recommend the right tool for the job—Python for logic-heavy tasks or integrations, SQL for straightforward data operations
+- Recommend the right block type for the job when needed
+- Write code that's easy to adapt, reuse, and test as requirements evolve
+- Aim for each block to do one thing well, whether it's loading data, transforming it, or exporting results
+- Think about how data flows in and out—keep inputs and outputs clear and consistent
+- Plan for things to go wrong and build in ways to catch issues without breaking everything
+- Add lightweight logging or checks to make debugging easier
+- Add simple tests or validations to catch problems early
+- Leave notes or documentation so others (or future you) can follow along. Recommend adding markdown blocks when applicable
+- Place utility functions in the /utils directory
+- To get a sense for how pipelines are structured you can find the pipeline metadata.yaml files here: /pipelines/PIPELINE_NAME/metadata.yaml
+
+# Planning Pipelines
+
+- Divide your workflow into logical steps that make sense for your goals
+- Link blocks in a way that shows dependencies clearly, keeping the flow intuitive
+- Look for opportunities to run tasks in parallel if it improves efficiency
+
+# Mage.ai File Structure
+
+Key directories:
+- `pipelines/`: Contains all pipeline definitions, each with its own directory
+- `data_loaders/`: Reusable blocks for extracting data from sources
+- `transformers/`: Reusable blocks for data transformation logic
+- `data_exporters/`: Reusable blocks for loading data to destinations
+- `utils/`: Helper functions and credential files
+- `dbt/`: DBT project files if using the DBT integration
+- `custom/`: Custom code extensions and components
+- `sensors/`: Blocks for monitoring data conditions and triggering actions
+- Assume other files and directories standard in mage also exist.

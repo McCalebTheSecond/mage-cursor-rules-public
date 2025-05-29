@@ -1,0 +1,131 @@
+---
+description: This document outlines the Git workflow for developing and testing Mage.ai pipelines and components, always read before doing Git opperations.
+globs: 
+alwaysApply: false
+---
+# Mage.ai Development: Git Workflow
+
+## Git Branching & Version Control
+
+### Branch Naming Convention
+Branches should follow the pattern: **`<prefix>/<mage-component-name-or-area>/<short-description-of-work>`**
+
+### Branch Prefixes
+When creating a new branch, please use one of the following prefixes:
+
+*   **`feature/`**: Use for developing new features, pipelines, or components.
+    *   *Examples:* `feature/pipeline_customer_ingestion/initial-setup`, `feature/dbt_model_sales_agg/add-new-metrics`
+*   **`fix/`**: Use for correcting bugs in existing pipelines, blocks, or components.
+    *   *Examples:* `fix/pipeline_data_validation/incorrect-date-parsing`, `fix/transformer_null_handling/type-error`
+*   **`refactor/`**: Use for improving the structure, performance, or readability of existing code without changing its external behavior.
+    *   *Examples:* `refactor/data_loader_api_client/optimize-requests`, `refactor/pipeline_daily_report/cleanup-block-dependencies`
+*   **`chore/`**: Use for routine maintenance tasks, configuration changes, or other tasks that aren't user-facing features or bug fixes. This can include updating documentation, or adjusting configurations.
+    *   *Examples:* `chore/requirements/update-package-versions`, `chore/documentation/update-pipeline-description`
+*   **`plan/`**: Use for branches dedicated to creating, outlining, or iterating on plans (e.g., for new features, refactors, or dbt models).
+    *   *Examples:* `plan/dbt_mart_project_estimation/initial-schema-design`, `plan/feature_new_datasource_integration/api_research_and_poc`
+
+### Git Workflow Steps
+1.  **Update `main`**: Before starting new work, ensure your local `main` branch is up-to-date with `origin/main`.
+    ```bash
+    git checkout main
+    git pull origin main
+    ```
+2.  **Create a new branch**: Create your new branch from `main` using the defined convention.
+    ```bash
+    git checkout -b <prefix>/<mage-component-name-or-area>/<short-description-of-work>
+    ```
+3.  **Develop & Commit**: Make your changes on the branch. Commit regularly with clear messages that explain the *why* behind the changes, not just the *what*.
+    *   **Local Pre-Commit Checks:** Utilize the Git pre-commit hook configured for this project. This hook automatically runs `sqlfluff lint` for SQL style (non-blocking warnings) and `dbt parse --target dev` for fast compilation checking (blocks commits on errors). See the Pre-Commit Hook Setup section below for details.
+4.  **Push your branch**: Push your branch to the remote repository (`origin`) frequently.
+    ```bash
+    git push origin <prefix>/<mage-component-name-or-area>/<short-description-of-work>
+    ```
+5.  **Testing**: Test your changes thoroughly in your development environment (e.g., using Mage's interactive features, running dbt models against your `dev` target).
+6.  **Merge to `main`**: When your work is complete and tested:
+    *   Ensure your feature branch is up-to-date with `main`:
+        ```bash
+        git checkout main
+        git pull origin main
+        git checkout <your-feature-branch>
+        git merge main
+        # Resolve any merge conflicts
+        ```
+    *   Merge your feature branch into `main`. Aim to preserve branch history by avoiding fast-forward merges to `main` if possible.
+        ```bash
+        git checkout main
+        git merge --no-ff <your-feature-branch>
+        git push origin main
+        ```
+7.  **Clean up**: After merging, you can delete your local and remote feature branches.  Make sure they aren't needed anymore.
+    ```bash
+    git branch -d <prefix>/<mage-component-name-or-area>/<short-description-of-work>
+    git push origin --delete <prefix>/<mage-component-name-or-area>/<short-description-of-work>
+    ```
+
+## Preserving Branch History
+When merging branches into `main`, using `git merge --no-ff <branch-name>` is encouraged. This creates a merge commit, even if the merge could be resolved as a fast-forward, which helps keep the history of feature branches visually distinct in the Git log. This makes it easier to understand when certain features were integrated.
+
+## Commit Amend Procedure
+
+### When to Amend Commits
+Use `git commit --amend` for:
+- Fixing typos in commit messages
+- Adding forgotten files to the last commit
+- Making small adjustments to the most recent commit
+
+### Safe Amend Workflow
+
+**Step 1: Check Current Status**
+```bash
+git status
+```
+
+**Step 2: Amend the Commit**
+```bash
+git add .                    # Stage any additional changes if needed
+git commit --amend          # Amend the most recent commit
+```
+
+**Step 3: Force Push (Required after amend if already pushed)**
+```bash
+git push origin main --force-with-lease
+```
+
+### Key Rules for Amending
+- ✅ Always check `git status` before amending
+- ✅ Use `--force-with-lease` instead of `--force` (safer)
+- ✅ Only amend recent commits (ideally the last one)
+- ⚠️ Never amend commits that others have already pulled (not applicable in solo development)
+- ⚠️ Warn the user if you think amending will cause issues.
+
+## Pre-Commit Hook Setup
+
+### Current Implementation
+The project uses a custom Git pre-commit hook located at `.git/hooks/pre-commit` that runs two validation steps. **This hook is working correctly and provides fast, reliable feedback.**
+
+1. **sqlfluff lint** (Non-blocking - informational only)
+   - Checks SQL style against BigQuery dialect
+   - Scans: `models/`, `snapshots/`, `macros/`, `analyses/`, `tests/`
+   - Provides warnings but does not block commits
+   - Auto-fix suggestion: `sqlfluff fix --dialect bigquery models/ snapshots/ macros/ analyses/ tests/`
+
+2. **dbt parse** (Blocking - compilation check)
+   - Fast compilation validation without running models
+   - Command: `dbt parse --target dev`
+   - Blocks commits if compilation errors are found
+   - **Smart detection**: Only runs if SQL/YAML files are modified (skips for docs-only changes)
+
+### When Pre-Commit Hook Fails
+- **sqlfluff issues**: Fix manually or run suggested auto-fix command (non-blocking)
+- **dbt parse failures**: Usually indicates real compilation errors - fix missing refs, syntax issues, etc.
+- **Transient failures**: Rare timeout/interruption issues - retry commit or validate manually
+- **Emergency bypass**: Use `git commit --no-verify` only after manual validation with `dbt parse --target dev`
+
+### Hook Validation
+To verify the hook is working: modify a .sql file and commit - you should see both sqlfluff and dbt parse run automatically.
+
+### Notes
+- The hook uses `dbt parse` (not `dbt build`) for speed - perfect for LLM-led development
+- State selectors (`--select state:modified+`) are available but not used in the hook
+- Manifest exists at `dbt/dw/target/manifest.json` for manual state selector usage
+- Hook intelligently skips dbt checks when only non-SQL files are modified 

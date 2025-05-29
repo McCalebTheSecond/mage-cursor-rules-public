@@ -1,0 +1,30 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Misc development guidence
+
+## dbt/Jinja Syntax 
+Use `{# comment #}` for Jinja comments, not `{%- /** comment */ -%}` which causes compilation errors.
+
+## SQL Syntax Highlighting
+Avoid apostrophes in SQL/dbt file comments (e.g., `don't`, `dbt's`) as they break Cursor syntax highlighting - use alternatives like `do not` instead of `don't`.
+
+## sqlfluff Common Style Issues
+Always check for trailing whitespace, proper file endings with single newline, and avoid SQL keywords like `name` as column aliases - use `sqlfluff fix --dialect bigquery models/` to auto-fix.
+
+## dbt Snapshot Format
+Snapshots in dbt need to use the `{% snapshot %}` block format, not just the `{{ config() }}` format.
+
+## BigQuery Timestamp Handling
+Use explicit casting for DATETIME vs TIMESTAMP comparisons: `DATETIME_ADD(DATETIME(fd.snapshot_date), INTERVAL 1 DAY) > DATETIME(sp.dbt_valid_from)` for end-of-day snapshot validity periods.
+
+## BigQuery Partitioning for Incremental Models
+Use `partition_by={'field': 'DATE(snapshot_date)', 'data_type': 'date'}` for proper BigQuery date partitioning in incremental models.
+
+## dbt State Manifest for Pre-commit
+Pre-commit hook using `dbt build --select state:modified+` fails without comparison manifest - use `--no-verify` and manual testing for initial commits.
+
+## No such file or directory issues
+If you're already in the `dbt/dw` directory, there's no need to use `cd dbt/dw`.

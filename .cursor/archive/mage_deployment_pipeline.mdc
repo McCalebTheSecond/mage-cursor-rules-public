@@ -1,0 +1,113 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+Assessment: NOT RELEVANT for your project
+Recommendation: Remove this rule file entirely
+Why it's not relevant:
+You're using Mage.ai Pro (SaaS) - You don't deploy or manage Mage infrastructure. Mage.ai handles all the deployment, scaling, and infrastructure for you.
+Wrong focus area - Your current work is:
+Building dbt models for data transformation
+Creating data pipelines within Mage
+Project estimation analytics
+BigQuery data warehousing
+Takes up valuable context space - This detailed deployment template uses context that would be better spent on:
+Your dbt model structure
+Current development progress
+Data transformation patterns
+Business logic for project estimation
+Potentially confusing - Having deployment infrastructure details might mislead future LLM conversations into thinking you need to manage Mage infrastructure.
+What to do instead:
+Delete mage_deployment_pipeline.mdc and focus your Cursor rules on what actually matters for your project:
+dbt development patterns
+Data modeling conventions
+Project estimation business logic
+Mage pipeline orchestration (not deployment)
+BigQuery optimization
+Current development state
+Your other rules like mage_misc.mdc, dbt_misc.mdc, and development-workflow.mdc are much more valuable because they relate to your actual daily work.
+Simple rule: If you haven't used it in the last month and won't use it in the next 3 months, remove it from context.
+
+```yaml
+blocks:
+  - downstream_blocks: []
+    language: markdown
+    name: Running operations in production
+    type: markdown
+    upstream_blocks: []
+    uuid: running_operations_in_production
+  - downstream_blocks: []
+    language: markdown
+    name: Create IAM policy to deploy Mage
+    type: markdown
+    upstream_blocks: []
+    uuid: create_iam_policy_to_deploy_mage
+  - downstream_blocks:
+      - infrastructure_setup
+    language: python
+    name: Permissions
+    type: custom
+    upstream_blocks: []
+    uuid: permissions
+  - downstream_blocks: []
+    language: markdown
+    name: Terraform setup docs
+    type: markdown
+    upstream_blocks: []
+    uuid: terraform_setup_docs
+  - downstream_blocks:
+      - teardown_deployed_resources
+    language: python
+    name: Infrastructure setup
+    type: custom
+    upstream_blocks:
+      - permissions
+    uuid: infrastructure_setup
+  - downstream_blocks:
+      - deploy
+    language: python
+    name: Teardown deployed resources
+    type: custom
+    upstream_blocks:
+      - infrastructure_setup
+    uuid: teardown_deployed_resources
+  - downstream_blocks:
+      - ci_and_cd
+    language: python
+    name: Deploy
+    type: custom
+    upstream_blocks:
+      - teardown_deployed_resources
+    uuid: deploy
+  - downstream_blocks: []
+    language: markdown
+    name: Version control
+    type: markdown
+    upstream_blocks: []
+    uuid: version_control_docs
+  - downstream_blocks: []
+    language: markdown
+    name: CICD
+    type: markdown
+    upstream_blocks: []
+    uuid: cicd
+  - configuration:
+      file_source:
+        path: unit_3_observability/markdowns/add_secrets_to_github_repo.md
+    downstream_blocks: []
+    language: markdown
+    name: Add secrets to GitHub repo
+    type: markdown
+    upstream_blocks: []
+    uuid: add_secrets_to_github_repo
+  - downstream_blocks: []
+    language: python
+    name: CI and CD
+    type: custom
+    upstream_blocks:
+      - deploy
+    uuid: ci_and_cd
+type: python
+uuid: deploying_to_production
+```

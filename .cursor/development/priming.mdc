@@ -1,0 +1,9 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Stored prompts
+
+Read all of these files and directories in their entirerty then wait:
+- dbt/dw/models/staging/odoo/*

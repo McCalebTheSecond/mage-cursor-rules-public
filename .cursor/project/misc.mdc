@@ -1,0 +1,10 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Misc
+- There is only one person working on this entire repo although Cursor IDE LLMs may also count in some cases.
+- Always read [development-workflow.mdc](mdc:.cursor/rules/development/development-workflow.mdc) before doing any Git opperations.
+- Use mcp_n8n_bigquery_query tool as needed for quickly querying BigQuery tables.
+- Default project directory that we're always SSHed into: `/home/src/default_rep/`
