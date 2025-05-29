@@ -1,0 +1,47 @@
+# dbt Miscellaneous Setup
+
+## Project & Profile
+
+-   **dbt Project Name:** `dw` (Located in the `dbt/dw/` directory relative to the project root)
+-   **dbt Profile Name:** `dw` (Defined in `dbt/dw/profiles.yml`)
+
+## Environments
+
+We utilize a standard multi-environment setup targeting BigQuery:
+
+-   **Development (`dev`):**
+    -   **BigQuery Project:** Use `${GOOGLE_CLOUD_PROJECT}` environment variable
+    -   **BigQuery Dataset:** `dev`
+    -   **Target:** `--target dev`
+    -   **Purpose:** Local development, testing new models, iterative work. Developers should primarily use this target.
+-   **Staging (`staging`):**
+    -   **BigQuery Project:** Use `${GOOGLE_CLOUD_PROJECT}` environment variable
+    -   **BigQuery Dataset:** `staging`
+    -   **Target:** `--target staging`
+    -   **Purpose:** Pre-production testing, CI/CD validation. Aims to mirror production closely.
+-   **Production (`prod`):**
+    -   **BigQuery Project:** Use `${GOOGLE_CLOUD_PROJECT}` environment variable
+    -   **BigQuery Dataset:** `prod`
+    -   **Target:** `--target prod`
+    -   **Purpose:** Final, trusted data models consumed by BI tools (Power BI) and other applications. Runs are typically scheduled via Mage deployment pipelines.
+
+## Credentials
+
+-   Authentication uses a service account keyfile or Application Default Credentials.
+-   **Keyfile Path:** Use `${GOOGLE_APPLICATION_CREDENTIALS}` environment variable (This path is relative to the environment where dbt runs).
+
+## Modeling Layers (Medallion Architecture)
+
+We aim to follow the Bronze, Silver, Gold modeling pattern as the project develops:
+
+-   **Bronze (Staging):** Intended for raw data ingestion with minimal transformations (e.g., create models in `models/staging`). These models will read from sources defined in `.yml` files.
+-   **Silver (Intermediate):** Planned for cleansed, integrated, and conformed data (e.g., create models in `models/intermediate`). These will build foundational tables like dimensions and facts, reading from Bronze models.
+-   **Gold (Marts):** Designed for aggregated, business-centric datasets optimized for reporting and analysis (e.g., create models in `models/marts`). These will read from Silver models and serve BI tools like Power BI.
+
+## Key Files & Directories
+
+-   **Project Configuration:** `dbt/dw/dbt_project.yml`
+-   **Profile Configuration:** `dbt/dw/profiles.yml` (Note: This file contains secrets and might be managed differently in production, potentially via Mage's `io_config.yaml`).
+-   **Models:** `dbt/dw/models/` (Organized into subdirectories like `staging`, `intermediate`, `marts`)
+-   **Sources:** Defined in `.yml` files, typically within `dbt/dw/models/`
+-   **Tests:** Defined in `.yml` files alongside models or in `dbt/dw/tests/` 
