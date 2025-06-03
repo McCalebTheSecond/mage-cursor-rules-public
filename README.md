@@ -1,3 +1,5 @@
+README is AI generated.
+
 # Mage Cursor Rules Public
 
 A collection of sanitized Cursor IDE rules for data engineering workflows with Mage.ai, dbt, BigQuery, and related tools.
